@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { executeCommand } from "../utils/commandExecutor.js";
-import { CLI, MODELS, APPROVAL_POLICIES, SANDBOX_MODES } from "../constants.js";
+import { CLI, MODELS, APPROVAL_MODES, SANDBOX_MODES } from "../constants.js";
 
 // Ping tool for testing MCP connection
 const pingArgsSchema = z.object({
@@ -45,7 +45,7 @@ export const helpTool = {
 Execute OpenAI Codex with comprehensive parameter support.
 - **prompt** (required): Your query or instruction
 - **model** (optional): ${Object.values(MODELS).join(", ")}
-- **approval** (optional): ${Object.values(APPROVAL_POLICIES).join(", ")}
+- **approval** (optional): ${Object.values(APPROVAL_MODES).join(", ")}
 - **sandbox** (optional): ${Object.values(SANDBOX_MODES).join(", ")}
 - **workingDir** (optional): Working directory for execution
 - **timeout** (optional): Maximum execution time in ms

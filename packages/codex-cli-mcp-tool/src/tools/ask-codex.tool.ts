@@ -6,7 +6,7 @@ import {
 import {
   ERROR_MESSAGES,
   MODELS,
-  APPROVAL_POLICIES,
+  APPROVAL_MODES,
   SANDBOX_MODES,
 } from "../constants.js";
 
@@ -51,17 +51,17 @@ const askCodexArgsSchema = z.object({
     .describe(
       `Optional model to use. Options: ${Object.values(MODELS).join(", ")}. Defaults to ${MODELS.GPT_5}.`
     ),
-  approval: z
-    .string()
-    .optional()
-    .describe(
-      `Approval policy: ${Object.values(APPROVAL_POLICIES).join(", ")}. Defaults to untrusted for safety.`
-    ),
   sandbox: z
     .string()
     .optional()
     .describe(
       `Sandbox mode: ${Object.values(SANDBOX_MODES).join(", ")}. Defaults to read-only for safety.`
+    ),
+  fullAuto: z
+    .boolean()
+    .optional()
+    .describe(
+      "Enable full-auto mode: auto-approve commands with workspace-write sandbox. Convenient for trusted operations."
     ),
   workingDir: z
     .string()
@@ -108,8 +108,8 @@ export const askCodexTool = {
     const {
       prompt,
       model,
-      approval,
       sandbox,
+      fullAuto,
       workingDir,
       timeout,
       image,
@@ -127,7 +127,7 @@ export const askCodexTool = {
 
       if (onProgress) {
         onProgress(
-          `Executing Codex with ${modelName} in ${approval || "untrusted"} mode...`
+          `Executing Codex with ${modelName}${fullAuto ? " (full-auto)" : ""}...`
         );
       }
 
@@ -135,8 +135,8 @@ export const askCodexTool = {
         prompt.trim(),
         {
           model,
-          approval,
           sandbox,
+          fullAuto,
           workingDir,
           timeout,
           image,
@@ -222,8 +222,8 @@ npm install -g @openai/codex
 
 **Permission Solutions:**
 1. **Workspace write:** Set \`sandbox: "${SANDBOX_MODES.WORKSPACE_WRITE}"\`
-2. **Full access:** Set \`sandbox: "${SANDBOX_MODES.DANGER_FULL_ACCESS}"\` (use with caution)
-3. **Approval policy:** Try \`approval: "${APPROVAL_POLICIES.ON_FAILURE}"\`
+2. **Full auto:** Set \`fullAuto: true\` for auto-approval with workspace-write
+3. **Full access:** Set \`sandbox: "${SANDBOX_MODES.DANGER_FULL_ACCESS}"\` (use with caution)
 4. **Check file permissions:** Ensure Codex can access target files`;
       }
 
@@ -246,7 +246,7 @@ npm install -g @openai/codex
 
 **Request Configuration:**
 - **Model:** ${model || MODELS.GPT_5 + " (default)"}
-- **Approval:** ${approval || "untrusted (default)"}
+- **Full Auto:** ${fullAuto ? "enabled" : "disabled"}
 - **Sandbox:** ${sandbox || "read-only (default)"}
 - **Working Directory:** ${workingDir || "current directory"}
 
@@ -254,7 +254,7 @@ npm install -g @openai/codex
 1. Verify Codex CLI installation: \`codex --version\`
 2. Check authentication: \`codex login\` or set OPENAI_API_KEY
 3. Test with simpler query: \`codex exec "Hello world"\`
-4. Try different model or approval mode`;
+4. Try different model or sandbox mode`;
     }
   },
 };

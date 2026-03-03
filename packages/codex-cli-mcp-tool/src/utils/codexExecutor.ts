@@ -7,7 +7,7 @@ import {
 
 export interface CodexMetadata {
   model?: string;
-  approval?: string;
+  approvalMode?: string;
   sandbox?: string;
   workingDir?: string;
   [key: string]: string | undefined;
@@ -21,13 +21,13 @@ export interface CodexOutput {
 
 export interface CodexExecutionOptions {
   model?: string;
-  approval?: string;
   sandbox?: string;
   workingDir?: string;
   timeout?: number;
   image?: string | string[];
   config?: string | Record<string, unknown>;
   profile?: string;
+  fullAuto?: boolean;
 }
 
 /**
@@ -36,7 +36,7 @@ export interface CodexExecutionOptions {
  * Codex uses `codex exec [OPTIONS] "prompt"` where the prompt is a positional
  * argument at the end (not a flag).
  *
- * Example: codex exec -m gpt-5 -s workspace-write -a on-failure "write hello world"
+ * Example: codex exec -m gpt-5 -s workspace-write --full-auto "write hello world"
  */
 export async function executeCodex(
   prompt: string,
@@ -45,13 +45,13 @@ export async function executeCodex(
 ): Promise<CodexOutput> {
   const {
     model,
-    approval,
     sandbox,
     workingDir,
     timeout,
     image,
     config,
     profile,
+    fullAuto,
   } = options;
 
   // Build command arguments: codex exec [OPTIONS] "prompt"
@@ -67,9 +67,9 @@ export async function executeCodex(
     args.push(CLI.FLAGS.SANDBOX, sandbox);
   }
 
-  // Add approval policy
-  if (approval) {
-    args.push(CLI.FLAGS.APPROVAL, approval);
+  // Add full-auto mode (convenience for auto-approval + workspace-write sandbox)
+  if (fullAuto) {
+    args.push(CLI.FLAGS.FULL_AUTO);
   }
 
   // Add working directory
@@ -105,7 +105,7 @@ export async function executeCodex(
   args.push(prompt);
 
   Logger.sandboxMode(
-    sandbox || approval || CLI.DEFAULTS.APPROVAL,
+    sandbox || (fullAuto ? "full-auto" : CLI.DEFAULTS.SANDBOX),
     `${CLI.COMMANDS.CODEX} ${args.join(" ")}`
   );
 
@@ -122,7 +122,7 @@ export async function executeCodex(
 
     // Attach metadata
     parsedOutput.metadata.model = model || CLI.DEFAULTS.MODEL;
-    if (approval) parsedOutput.metadata.approval = approval;
+    if (fullAuto) parsedOutput.metadata.approvalMode = "full-auto";
     if (sandbox) parsedOutput.metadata.sandbox = sandbox;
     if (workingDir) parsedOutput.metadata.workingDir = workingDir;
 
@@ -191,8 +191,8 @@ export function formatCodexResponseForMCP(
   if (includeMetadata && Object.keys(output.metadata).length > 0) {
     formatted += "**Codex Configuration:**\n";
     if (output.metadata.model) formatted += `- Model: ${output.metadata.model}\n`;
-    if (output.metadata.approval)
-      formatted += `- Approval: ${output.metadata.approval}\n`;
+    if (output.metadata.approvalMode)
+      formatted += `- Approval Mode: ${output.metadata.approvalMode}\n`;
     if (output.metadata.sandbox)
       formatted += `- Sandbox: ${output.metadata.sandbox}\n`;
     if (output.metadata.workingDir)

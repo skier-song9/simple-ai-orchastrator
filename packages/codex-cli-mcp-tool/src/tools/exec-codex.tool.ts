@@ -3,7 +3,7 @@ import {
   executeCodex,
   formatCodexResponseForMCP,
 } from "../utils/codexExecutor.js";
-import { ERROR_MESSAGES, MODELS, SANDBOX_MODES, APPROVAL_POLICIES, STATUS_MESSAGES } from "../constants.js";
+import { ERROR_MESSAGES, MODELS, SANDBOX_MODES, STATUS_MESSAGES } from "../constants.js";
 
 const execCodexArgsSchema = z.object({
   prompt: z
@@ -60,8 +60,8 @@ export const execCodexTool = {
           sandbox,
           timeout,
           workingDir,
-          // Always use "never" approval for non-interactive execution
-          approval: APPROVAL_POLICIES.NEVER,
+          // Use full-auto for non-interactive execution
+          fullAuto: true,
         },
         onProgress
       );

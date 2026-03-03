@@ -32,12 +32,15 @@ export const MODELS = {
   O4_MINI: "o4-mini",
 };
 
-// Approval policies
-export const APPROVAL_POLICIES = {
-  UNTRUSTED: "untrusted",
-  ON_FAILURE: "on-failure",
-  ON_REQUEST: "on-request",
-  NEVER: "never",
+// Approval modes for codex exec
+// Note: codex exec does NOT support -a flag. Instead it uses:
+// --full-auto (convenience for -a on-request + -s workspace-write)
+// --dangerously-bypass-approvals-and-sandbox (skip everything)
+// No flag = default untrusted behavior
+export const APPROVAL_MODES = {
+  DEFAULT: "default",
+  FULL_AUTO: "full-auto",
+  BYPASS: "bypass",
 };
 
 // Sandbox modes
@@ -87,7 +90,7 @@ export const CLI = {
   FLAGS: {
     MODEL: "-m",
     SANDBOX: "-s",
-    APPROVAL: "-a",
+    DANGEROUSLY_BYPASS: "--dangerously-bypass-approvals-and-sandbox",
     WORKING_DIR: "-C",
     IMAGE: "-i",
     CONFIG: "-c",
