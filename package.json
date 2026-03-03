@@ -1,0 +1,10 @@
+{
+  "name": "agent-orchestrator",
+  "version": "0.1.0",
+  "description": "Claude Code plugin: multi-agent orchestrator using MCP",
+  "private": true,
+  "scripts": {
+    "build:gemini-mcp": "cd packages/gemini-cli-mcp-tool && npm run build",
+    "test": "cd packages/gemini-cli-mcp-tool && npm test"
+  }
+}
