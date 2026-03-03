@@ -8,29 +8,29 @@ agents:
   code:
     provider: codex
     description: "Code generation & implementation"
-    mcp_tool: mcp__codex-cli__ask-codex
+    mcp_tool: mcp__codex-cli-mcp__ask-codex
     options:
       model: gpt-5
       sandbox: workspace-write
   review:
     provider: gemini
     description: "Code review & quality analysis"
-    mcp_tool: mcp__gemini-cli__ask-gemini
+    mcp_tool: mcp__gemini-cli-mcp__ask-gemini
   design:
     provider: gemini
     description: "UI/UX and icon design"
-    mcp_tool: mcp__gemini-cli__ask-gemini
+    mcp_tool: mcp__gemini-cli-mcp__ask-gemini
   test:
     provider: codex
     description: "Test writing & execution"
-    mcp_tool: mcp__codex-cli__ask-codex
+    mcp_tool: mcp__codex-cli-mcp__ask-codex
     options:
       model: gpt-5
       sandbox: workspace-write
   refactor:
     provider: codex
     description: "Code refactoring & optimization"
-    mcp_tool: mcp__codex-cli__ask-codex
+    mcp_tool: mcp__codex-cli-mcp__ask-codex
     options:
       model: gpt-5
       sandbox: workspace-write

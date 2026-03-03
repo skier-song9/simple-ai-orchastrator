@@ -30,19 +30,19 @@ Read `config/agents.yaml` to determine which agent handles the capability.
 agents:
   code:
     provider: codex
-    mcp_tool: mcp__codex-cli__ask-codex
+    mcp_tool: mcp__codex-cli-mcp__ask-codex
     options:
       model: gpt-5
       sandbox: workspace-write
   review:
     provider: gemini
-    mcp_tool: mcp__gemini-cli__ask-gemini
+    mcp_tool: mcp__gemini-cli-mcp__ask-gemini
 ```
 
 If the user passed `--agent=<agent>`, use that provider instead of the configured one. Map the override to the correct MCP tool:
 - `claude` → handle directly (no MCP call)
-- `codex` → `mcp__codex-cli__ask-codex`
-- `gemini` → `mcp__gemini-cli__ask-gemini`
+- `codex` → `mcp__codex-cli-mcp__ask-codex`
+- `gemini` → `mcp__gemini-cli-mcp__ask-gemini`
 
 ## Step 3: Read the system prompt
 
@@ -54,13 +54,13 @@ Read `prompts/<capability>-system.md`. This is the instruction set for the downs
 Handle the task directly without calling an MCP tool. Use the system prompt from Step 3 to guide your own response. Apply the instructions as your working guidelines.
 
 ### If provider is `codex`:
-Call `mcp__codex-cli__ask-codex` with:
+Call `mcp__codex-cli-mcp__ask-codex` with:
 - `prompt`: the content of `prompts/<capability>-system.md`, followed by a blank line, followed by the user's task description and any relevant context you gathered
 - `model`: the model value from the config options (e.g., `gpt-5`)
 - `sandbox`: the sandbox value from the config options (e.g., `workspace-write`)
 
 ### If provider is `gemini`:
-Call `mcp__gemini-cli__ask-gemini` with:
+Call `mcp__gemini-cli-mcp__ask-gemini` with:
 - `prompt`: the content of `prompts/<capability>-system.md`, followed by a blank line, followed by the user's task description and any relevant context you gathered
 
 ## Step 5: Present results
