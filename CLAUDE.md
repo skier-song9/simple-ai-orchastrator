@@ -51,13 +51,15 @@ config/agents.yaml          # Agent-to-capability mapping
 skills/                     # Skill definitions (orchestrate, plan, code, review, design, test, refactor)
 prompts/                    # System prompts passed to downstream agents
 packages/gemini-cli-mcp-tool/  # MCP server wrapping gemini-cli
+packages/codex-cli-mcp-tool/   # MCP server wrapping codex-cli
 ```
 
 ## Prerequisites
 
-- **codex-cli**: `npm install -g @openai/codex` + codex-cli-mcp-tool registered
-- **gemini-cli**: `brew install gemini-cli` + gemini-cli-mcp-tool registered
+- **codex-cli**: `npm install -g @openai/codex`
+- **gemini-cli**: `brew install gemini-cli`
 - Register MCP servers:
   ```bash
+  claude mcp add codex-cli-mcp node packages/codex-cli-mcp-tool/dist/index.js
   claude mcp add gemini-cli-mcp node packages/gemini-cli-mcp-tool/dist/index.js
   ```
