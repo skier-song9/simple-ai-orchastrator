@@ -32,10 +32,6 @@ const server = new Server(
   }
 );
 
-let isProcessing = false;
-let currentOperationName = "";
-let latestOutput = "";
-
 async function sendNotification(
   method: string,
   params: Record<string, unknown>
@@ -74,13 +70,25 @@ async function sendProgressNotification(
   }
 }
 
+interface ProgressState {
+  interval: NodeJS.Timeout;
+  progressToken: string | number | undefined;
+  operationName: string;
+  isProcessing: boolean;
+  latestOutput: string;
+}
+
 function startProgressUpdates(
   operationName: string,
   progressToken: string | number | undefined
-): { interval: NodeJS.Timeout; progressToken: string | number | undefined } {
-  isProcessing = true;
-  currentOperationName = operationName;
-  latestOutput = ""; // Reset latest output
+): ProgressState {
+  const state: ProgressState = {
+    interval: undefined as unknown as NodeJS.Timeout,
+    progressToken,
+    operationName,
+    isProcessing: true,
+    latestOutput: "",
+  };
 
   const progressMessages = [
     `${operationName} - Gemini is analyzing your request...`,
@@ -104,51 +112,46 @@ function startProgressUpdates(
   }
 
   // Keep client alive with periodic updates
-  const progressInterval = setInterval(async () => {
-    if (isProcessing && progressToken) {
+  state.interval = setInterval(async () => {
+    if (state.isProcessing && state.progressToken) {
       progress += 1;
       const baseMessage = progressMessages[messageIndex % progressMessages.length];
-      const outputPreview = latestOutput.slice(-150).trim(); // Last 150 chars
+      const outputPreview = state.latestOutput.slice(-150).trim(); // Last 150 chars
       const message = outputPreview
         ? `${baseMessage}\nOutput: ...${outputPreview}`
         : baseMessage;
 
       await sendProgressNotification(
-        progressToken,
+        state.progressToken,
         progress,
         undefined,
         message
       );
       messageIndex++;
-    } else if (!isProcessing) {
-      clearInterval(progressInterval);
+    } else if (!state.isProcessing) {
+      clearInterval(state.interval);
     }
   }, PROTOCOL.KEEPALIVE_INTERVAL); // Every 25 seconds
 
-  return { interval: progressInterval, progressToken };
+  return state;
 }
 
 function stopProgressUpdates(
-  progressData: {
-    interval: NodeJS.Timeout;
-    progressToken: string | number | undefined;
-  },
+  state: ProgressState,
   success = true
 ): void {
-  const operationName = currentOperationName; // Store before clearing
-  isProcessing = false;
-  currentOperationName = "";
-  clearInterval(progressData.interval);
+  state.isProcessing = false;
+  clearInterval(state.interval);
 
   // Send final progress notification if client requested progress
-  if (progressData.progressToken) {
+  if (state.progressToken) {
     sendProgressNotification(
-      progressData.progressToken,
+      state.progressToken,
       100,
       100,
       success
-        ? `${operationName} completed successfully`
-        : `${operationName} failed`
+        ? `${state.operationName} completed successfully`
+        : `${state.operationName} failed`
     );
   }
 }
@@ -178,7 +181,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       // Execute the tool using the unified registry with progress callback
       const result = await executeTool(toolName, args, (newOutput: string) => {
-        latestOutput = newOutput;
+        progressData.latestOutput = newOutput;
       });
 
       // Stop progress updates

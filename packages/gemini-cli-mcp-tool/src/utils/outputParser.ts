@@ -115,17 +115,3 @@ export function formatGeminiResponse(
   return formatted;
 }
 
-export function isErrorResponse(output: GeminiOutput): boolean {
-  const errorKeywords = [
-    "error",
-    "failed",
-    "unable",
-    "cannot",
-    "authentication",
-    "permission denied",
-    "rate limit",
-    "quota exceeded",
-  ];
-  const responseText = output.response.toLowerCase();
-  return errorKeywords.some((keyword) => responseText.includes(keyword));
-}

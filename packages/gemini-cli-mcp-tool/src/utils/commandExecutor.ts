@@ -5,7 +5,8 @@ export async function executeCommand(
   command: string,
   args: string[],
   onProgress?: (output: string) => void,
-  timeout?: number
+  timeout?: number,
+  cwd?: string
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const startTime = Date.now();
@@ -15,6 +16,7 @@ export async function executeCommand(
       env: process.env,
       shell: false,
       stdio: ["ignore", "pipe", "pipe"],
+      ...(cwd ? { cwd } : {}),
     });
 
     let stdout = "";
@@ -74,6 +76,8 @@ export async function executeCommand(
       if (!isResolved) {
         isResolved = true;
         if (timeoutHandle) clearTimeout(timeoutHandle);
+        process.removeListener("SIGINT", sigintHandler);
+        process.removeListener("SIGTERM", sigtermHandler);
         Logger.error(`Process error:`, error);
         if (error.message.includes("ENOENT")) {
           reject(
@@ -91,6 +95,8 @@ export async function executeCommand(
       if (!isResolved) {
         isResolved = true;
         if (timeoutHandle) clearTimeout(timeoutHandle);
+        process.removeListener("SIGINT", sigintHandler);
+        process.removeListener("SIGTERM", sigtermHandler);
         if (code === 0) {
           Logger.commandComplete(startTime, code, stdout.length);
           resolve(stdout.trim());
@@ -105,17 +111,21 @@ export async function executeCommand(
       }
     });
 
-    // Handle process termination
-    process.on("SIGINT", () => {
+    // Handle process termination - use once() to avoid accumulation across calls,
+    // and clean up via removeListener in the close/error handlers.
+    const sigintHandler = () => {
       if (!isResolved) {
         childProcess.kill("SIGTERM");
       }
-    });
+    };
 
-    process.on("SIGTERM", () => {
+    const sigtermHandler = () => {
       if (!isResolved) {
         childProcess.kill("SIGTERM");
       }
-    });
+    };
+
+    process.once("SIGINT", sigintHandler);
+    process.once("SIGTERM", sigtermHandler);
   });
 }
