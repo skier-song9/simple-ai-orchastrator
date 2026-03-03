@@ -38,7 +38,7 @@ Agent assignments are in `config/agents.yaml`. Edit to change which agent handle
 agents:
   code:
     provider: codex          # claude | codex | gemini
-    mcp_tool: mcp__codex-cli__ask-codex
+    mcp_tool: mcp__codex-cli-mcp__ask-codex
     options:
       model: gpt-5
       sandbox: workspace-write
