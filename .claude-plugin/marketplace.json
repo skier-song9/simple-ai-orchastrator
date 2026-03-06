@@ -1,0 +1,25 @@
+{
+  "name": "simple-ai-orchestrator",
+  "owner": {
+    "name": "onomaai",
+    "email": ""
+  },
+  "metadata": {
+    "description": "Multi-agent orchestration marketplace for Claude Code — routes tasks to Claude, Codex, or Gemini.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "agent-orchestrator",
+      "source": ".",
+      "description": "Routes development tasks (plan, code, review, design, test, refactor) to the best AI agent via MCP.",
+      "version": "0.1.0",
+      "author": {
+        "name": "onomaai"
+      },
+      "repository": "https://github.com/onomaai/simple-ai-orchastrator",
+      "license": "MIT",
+      "keywords": ["orchestration", "codex", "gemini", "mcp", "multi-agent"]
+    }
+  ]
+}

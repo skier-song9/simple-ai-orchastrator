@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "codex-cli-mcp": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/packages/codex-cli-mcp-tool/dist/index.js"]
+    },
+    "gemini-cli-mcp": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/packages/gemini-cli-mcp-tool/dist/index.js"]
+    }
+  }
+}
