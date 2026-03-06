@@ -1,0 +1,11 @@
+{
+  "name": "agent-orchestrator",
+  "description": "Multi-agent orchestration for Claude Code. Routes tasks (plan, code, review, design, test, refactor) to Claude, Codex, or Gemini via MCP.",
+  "version": "0.1.0",
+  "author": {
+    "name": "onomaai"
+  },
+  "repository": "https://github.com/onomaai/simple-ai-orchastrator",
+  "license": "MIT",
+  "keywords": ["orchestration", "codex", "gemini", "mcp", "multi-agent"]
+}

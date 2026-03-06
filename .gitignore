@@ -1,6 +1,8 @@
 node_modules/
 dist/
 out/
+# Allow MCP package dist for plugin distribution
+!packages/*/dist/
 *.vsix
 *.log
 .env
